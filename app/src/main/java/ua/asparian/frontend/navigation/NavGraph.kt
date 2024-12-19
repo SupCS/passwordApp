@@ -9,6 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ua.asparian.frontend.*
 import ua.asparian.frontend.data.TokenManager
+import ua.asparian.frontend.screens.LoginScreen
+import ua.asparian.frontend.screens.RegisterScreen
+import ua.asparian.frontend.viewmodels.LoginViewModel
+import ua.asparian.frontend.viewmodels.RegisterViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, mainViewModel: MainViewModel) {
@@ -24,7 +28,12 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, ma
     ) {
         // Логін та реєстрація
         composable("login") {
+            val viewModel = remember {
+                LoginViewModel(tokenManager)
+            }
+
             LoginScreen(
+                viewModel = viewModel,
                 onLoginSuccess = {
                     navController.navigate("main") {
                         popUpTo("login") { inclusive = true }
@@ -35,10 +44,13 @@ fun NavGraph(navController: NavHostController, modifier: Modifier = Modifier, ma
             )
         }
 
+
         composable("register") {
+            val viewModel = remember { RegisterViewModel() }
             RegisterScreen(
+                viewModel = viewModel,
                 onRegisterSuccess = {
-                    navController.navigate("main") {
+                    navController.navigate("login") {
                         popUpTo("register") { inclusive = true }
                     }
                 },
