@@ -1,4 +1,4 @@
-package ua.asparian.frontend
+package ua.asparian.frontend.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

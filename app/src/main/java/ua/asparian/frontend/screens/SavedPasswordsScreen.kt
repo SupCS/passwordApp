@@ -1,4 +1,4 @@
-package ua.asparian.frontend
+package ua.asparian.frontend.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -8,51 +8,38 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-import ua.asparian.frontend.api.RetrofitInstance
-import ua.asparian.frontend.api.SavedPassword
-import ua.asparian.frontend.data.TokenManager
-import androidx.compose.material3.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.material.icons.filled.Delete
-
-
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import ua.asparian.frontend.viewmodels.SavedPasswordsViewModel
 
 @Composable
-fun SavedPasswordsScreen() {
+fun SavedPasswordsScreen(viewModel: SavedPasswordsViewModel) {
     val context = LocalContext.current
-    val tokenManager = remember { TokenManager(context) }
-    val token = tokenManager.getToken()
-    var savedPasswords by remember { mutableStateOf<List<SavedPassword>?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    val scope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
 
-    // Завантаження паролів
     LaunchedEffect(Unit) {
-        if (token != null) {
-            scope.launch {
-                try {
-                    val response = RetrofitInstance.api.getSavedPasswords("Bearer $token")
-                    savedPasswords = response
-                } catch (e: Exception) {
-                    errorMessage = "Failed to load passwords: ${e.message}"
-                }
-            }
-        } else {
-            errorMessage = "You are not logged in."
-        }
+        viewModel.loadSavedPasswords()
     }
+
+    val savedPasswords = viewModel.savedPasswords.value
+    val errorMessage = viewModel.errorMessage.value
 
     Column(
         modifier = Modifier
@@ -67,24 +54,19 @@ fun SavedPasswordsScreen() {
         when {
             savedPasswords != null -> {
                 LazyColumn {
-                    items(savedPasswords!!) { password ->
+                    items(savedPasswords) { password ->
                         PasswordTile(
                             id = password.id ?: "",
                             title = password.title,
                             username = password.username,
                             password = password.password,
+                            onCopy = { text ->
+                                clipboardManager.setText(AnnotatedString(text))
+                                Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+                            },
                             onDelete = { id ->
-                                scope.launch {
-                                    try {
-                                        if (token != null) {
-                                            RetrofitInstance.api.deletePassword("Bearer $token", id)
-                                            savedPasswords = savedPasswords?.filterNot { it.id == id }
-                                            Toast.makeText(context, "Password deleted", Toast.LENGTH_SHORT).show()
-                                        }
-                                    } catch (e: Exception) {
-                                        Toast.makeText(context, "Failed to delete: ${e.message}", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
+                                viewModel.deletePassword(id)
+                                Toast.makeText(context, "Password deleted", Toast.LENGTH_SHORT).show()
                             }
                         )
                     }
@@ -100,11 +82,15 @@ fun SavedPasswordsScreen() {
     }
 }
 
-
-
 @Composable
-fun PasswordTile(id: String, title: String, username: String, password: String, onDelete: (String) -> Unit) {
-    val clipboardManager = LocalClipboardManager.current
+fun PasswordTile(
+    id: String,
+    title: String,
+    username: String,
+    password: String,
+    onCopy: (String) -> Unit,
+    onDelete: (String) -> Unit
+) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     Card(
@@ -113,7 +99,7 @@ fun PasswordTile(id: String, title: String, username: String, password: String, 
             .padding(8.dp),
         shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF383838))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF555555))
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -143,10 +129,8 @@ fun PasswordTile(id: String, title: String, username: String, password: String, 
                 Text(
                     text = username,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.clickable {
-                        clipboardManager.setText(AnnotatedString(username))
-                    },
-                    color = Color.White
+                    color = Color.White,
+                    modifier = Modifier.clickable { onCopy(username) }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -160,9 +144,7 @@ fun PasswordTile(id: String, title: String, username: String, password: String, 
                         text = if (isPasswordVisible) password else "*".repeat(password.length),
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White,
-                        modifier = Modifier.clickable {
-                            clipboardManager.setText(AnnotatedString(password))
-                        }
+                        modifier = Modifier.clickable { onCopy(password) }
                     )
                 }
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
@@ -176,3 +158,4 @@ fun PasswordTile(id: String, title: String, username: String, password: String, 
         }
     }
 }
+

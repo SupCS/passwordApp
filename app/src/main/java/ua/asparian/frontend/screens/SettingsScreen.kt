@@ -1,26 +1,22 @@
-package ua.asparian.frontend
+package ua.asparian.frontend.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import ua.asparian.frontend.data.TokenManager
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+import ua.asparian.frontend.viewmodels.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
-    onLogout: () -> Unit, // Callback для виходу
+    viewModel: SettingsViewModel,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val tokenManager = TokenManager(context)
-
-    val username = tokenManager.getUsername()
-    var confirmationVisible by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -28,27 +24,38 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Settings", style = MaterialTheme.typography.headlineMedium)
-
-        Spacer(modifier = Modifier.height(16.dp))
+        // Заголовок
+        Text(
+            text = "Settings",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = 40.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
 
         // Відображення логіну
-        Text(text = "Logged in as: $username", style = MaterialTheme.typography.bodyLarge)
+        Text(
+            text = "Logged in as: ${viewModel.username}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.White
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         // Кнопка виходу
         Button(
-            onClick = { confirmationVisible = true },
+            onClick = { viewModel.showLogoutDialog() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Log Out")
         }
 
-// Діалог підтвердження виходу
-        if (confirmationVisible) {
+        // Діалог підтвердження виходу
+        if (viewModel.isLogoutDialogVisible) {
             AlertDialog(
-                onDismissRequest = { confirmationVisible = false },
+                onDismissRequest = { viewModel.hideLogoutDialog() },
                 title = {
                     Text(
                         text = "Log Out",
@@ -66,8 +73,8 @@ fun SettingsScreen(
                 confirmButton = {
                     Button(
                         onClick = {
-                            confirmationVisible = false
-                            onLogout()
+                            viewModel.hideLogoutDialog()
+                            viewModel.logout(onLogout)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -79,9 +86,9 @@ fun SettingsScreen(
                 },
                 dismissButton = {
                     TextButton(
-                        onClick = { confirmationVisible = false },
+                        onClick = { viewModel.hideLogoutDialog() },
                         colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary
+                            contentColor = Color.White
                         )
                     ) {
                         Text("Cancel")
@@ -91,6 +98,5 @@ fun SettingsScreen(
                 tonalElevation = 6.dp
             )
         }
-
     }
 }

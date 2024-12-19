@@ -1,27 +1,22 @@
-package ua.asparian.frontend
+package ua.asparian.frontend.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import ua.asparian.frontend.api.PasswordStrengthRequest
-import ua.asparian.frontend.api.RetrofitInstance
+import ua.asparian.frontend.viewmodels.CheckPasswordStrengthViewModel
 
 @Composable
-fun CheckPasswordStrengthScreen(modifier: Modifier = Modifier) {
-    var password by remember { mutableStateOf("") }
-    var strengthResult by remember { mutableStateOf<String?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
+fun CheckPasswordStrengthScreen(viewModel: CheckPasswordStrengthViewModel, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -33,21 +28,22 @@ fun CheckPasswordStrengthScreen(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Поле вводу пароля
+        // Поле вводу паролю
         OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Enter Password", color = MaterialTheme.colorScheme.onSurface) },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            value = viewModel.password,
+            onValueChange = { viewModel.password = it },
+            label = { Text("Enter Password") },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = Color.White,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedBorderColor = Color.Transparent
             ),
             shape = RoundedCornerShape(10.dp),
@@ -58,14 +54,7 @@ fun CheckPasswordStrengthScreen(modifier: Modifier = Modifier) {
 
         // Кнопка перевірки
         Button(
-            onClick = {
-                if (password.isNotEmpty()) {
-                    checkPasswordStrength(password) { result, error ->
-                        strengthResult = result
-                        errorMessage = error
-                    }
-                }
-            },
+            onClick = { viewModel.checkStrength() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -81,41 +70,23 @@ fun CheckPasswordStrengthScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         // Відображення результату
-        strengthResult?.let {
+        viewModel.strengthResult?.let {
             Text(
                 text = it,
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = Color.White,
                 modifier = Modifier.padding(8.dp)
             )
         }
 
         // Відображення помилки
-        errorMessage?.let {
+        viewModel.errorMessage?.let {
             Text(
                 text = it,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(8.dp)
             )
-        }
-    }
-}
-
-// Функція для виклику API
-private fun checkPasswordStrength(password: String, callback: (String?, String?) -> Unit) {
-    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
-        try {
-            val response = RetrofitInstance.api.checkPasswordStrength(PasswordStrengthRequest(password))
-            val result = """
-                Score: ${response.score}
-                Warning: ${response.warning}
-                Suggestions: ${response.suggestions.joinToString()}
-                Crack Time: ${response.crackTimeOfflineSlowHashingDisplay}
-            """.trimIndent()
-            callback(result, null)
-        } catch (e: Exception) {
-            callback(null, "Failed to check password strength: ${e.message}")
         }
     }
 }

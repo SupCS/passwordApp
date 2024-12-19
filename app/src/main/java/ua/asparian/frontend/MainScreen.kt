@@ -26,6 +26,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import ua.asparian.frontend.navigation.BottomNavItem
 import ua.asparian.frontend.data.TokenManager
+import ua.asparian.frontend.screens.CheckPasswordStrengthScreen
+import ua.asparian.frontend.screens.GeneratePasswordScreen
+import ua.asparian.frontend.screens.InfoScreen
+import ua.asparian.frontend.screens.SavedPasswordsScreen
+import ua.asparian.frontend.screens.SettingsScreen
+import ua.asparian.frontend.viewmodels.CheckPasswordStrengthViewModel
+import ua.asparian.frontend.viewmodels.GeneratePasswordViewModel
+import ua.asparian.frontend.viewmodels.SavedPasswordsViewModel
+import ua.asparian.frontend.viewmodels.SettingsViewModel
 
 @Composable
 fun MainScreen(onLogout: () -> Unit, mainViewModel: MainViewModel) {
@@ -51,24 +60,35 @@ fun MainScreen(onLogout: () -> Unit, mainViewModel: MainViewModel) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.GeneratePassword.route) {
-                GeneratePasswordScreen(viewModel = mainViewModel)
+                val generatePasswordViewModel = remember { GeneratePasswordViewModel(tokenManager) }
+                GeneratePasswordScreen(viewModel = generatePasswordViewModel, mainViewModel=mainViewModel)
             }
+
             composable(BottomNavItem.CheckPasswordStrength.route) {
-                CheckPasswordStrengthScreen()
+                val checkPasswordStrengthViewModel = remember { CheckPasswordStrengthViewModel() }
+                CheckPasswordStrengthScreen(viewModel = checkPasswordStrengthViewModel)
             }
             composable(BottomNavItem.SavedPasswords.route) {
                 if (tokenManager.getToken() == null) {
                     showUnauthDialog = true
                 } else {
-                    SavedPasswordsScreen()
+                    val savedPasswordsViewModel = remember { SavedPasswordsViewModel(tokenManager) }
+                    SavedPasswordsScreen(viewModel = savedPasswordsViewModel)
                 }
             }
+
             composable(BottomNavItem.Info.route) {
                 InfoScreen()
             }
             composable(BottomNavItem.Settings.route) {
-                SettingsScreen(onLogout = onLogout)
+                val settingsViewModel = remember { SettingsViewModel(TokenManager(context)) }
+
+                SettingsScreen(
+                    viewModel = settingsViewModel,
+                    onLogout = onLogout
+                )
             }
+
         }
     }
 
