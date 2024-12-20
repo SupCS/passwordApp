@@ -27,6 +27,10 @@ class GeneratePasswordViewModel(val tokenManager: TokenManager) : ViewModel() {
             generatedPassword = "Invalid password length. Must be at least 4."
             return
         }
+        if (!includeUppercase && !includeLowercase && !includeNumbers && !includeSpecialCharacters) {
+            generatedPassword = "At least one character type must be selected."
+            return
+        }
         isLoading = true
         viewModelScope.launch {
             try {
