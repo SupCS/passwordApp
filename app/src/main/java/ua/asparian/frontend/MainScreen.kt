@@ -158,7 +158,7 @@ fun BottomNavigationBar(
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
-                        .size(24.dp) // Розмір іконок
+                        .size(32.dp) // Розмір іконок
                         .align(Alignment.Center)
                 )
             }

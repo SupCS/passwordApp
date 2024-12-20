@@ -33,18 +33,18 @@ fun GeneratePasswordScreen(viewModel: GeneratePasswordViewModel, mainViewModel: 
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Заголовок
         Text(
-            text = "Generate Password",
+            text = "GENERATE",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold
             ),
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -104,7 +104,8 @@ fun GeneratePasswordScreen(viewModel: GeneratePasswordViewModel, mainViewModel: 
         ) {
             Text(
                 text = if (viewModel.isLoading) "Loading..." else "Generate",
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 20.sp
             )
         }
 
@@ -204,14 +205,15 @@ fun ToggleWithLabel(
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            fontSize = 20.sp
         )
         Box(
             modifier = Modifier
-                .size(48.dp, 32.dp)
+                .size(56.dp, 32.dp)
                 .background(
                     color = if (isChecked) Color(0xFFFFEA03) else Color(0xFF252525),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(16.dp)
                 )
                 .clickable(
                     onClick = { onCheckedChange(!isChecked) },

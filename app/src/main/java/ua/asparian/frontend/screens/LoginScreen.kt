@@ -41,7 +41,7 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Поле логіну
         OutlinedTextField(
@@ -107,7 +107,7 @@ fun LoginScreen(
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text("Log In")
+                Text("Log In", fontSize = 20.sp,)
             }
         }
 
@@ -115,14 +115,14 @@ fun LoginScreen(
 
         // Кнопка реєстрації
         TextButton(onClick = { onRegisterClick() }) {
-            Text(text = "Register", color = Color.White)
+            Text(text = "Register", color = Color.White, fontSize = 16.sp)
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // Кнопка "Продовжити як гість"
         TextButton(onClick = { onGuestContinue() }) {
-            Text(text = "Continue as Guest", color = Color.White)
+            Text(text = "Continue as Guest", color = Color.White, fontSize = 16.sp,)
         }
     }
 }

@@ -36,7 +36,9 @@ fun InfoScreen(modifier: Modifier = Modifier) {
         Text(
             text = "Ця програма є курсовою роботою студента групи ТВ-11 Аспаряна Дмитра.\n\n" +
                     "Головна мета додатку - забезпечити зручний та безпечний менеджер паролів для користувачів.",
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 24.sp,
+            ),
             color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(bottom = 16.dp)

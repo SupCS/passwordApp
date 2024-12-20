@@ -37,7 +37,7 @@ fun RegisterScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = viewModel.username,
@@ -99,14 +99,14 @@ fun RegisterScreen(
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text("Register")
+                Text("Register", fontSize = 20.sp,)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = { onBackToLoginClick() }) {
-            Text(text = "Back to Login", color = Color.White)
+            Text(text = "Back to Login", color = Color.White, fontSize = 16.sp,)
         }
     }
 }

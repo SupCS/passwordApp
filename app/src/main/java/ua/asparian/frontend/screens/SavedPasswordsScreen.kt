@@ -26,7 +26,9 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ua.asparian.frontend.viewmodels.SavedPasswordsViewModel
 
 @Composable
@@ -48,7 +50,13 @@ fun SavedPasswordsScreen(viewModel: SavedPasswordsViewModel) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Saved Passwords", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = "SAVED PASSWORDS",
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
@@ -114,13 +122,15 @@ fun PasswordTile(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 24.sp
                 )
                 IconButton(onClick = { onDelete(id) }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Password",
-                        tint = Color.Red
+                        tint = Color.Red,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }
@@ -130,7 +140,8 @@ fun PasswordTile(
                     text = username,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
-                    modifier = Modifier.clickable { onCopy(username) }
+                    modifier = Modifier.clickable { onCopy(username) },
+                    fontSize = 20.sp
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -144,14 +155,16 @@ fun PasswordTile(
                         text = if (isPasswordVisible) password else "*".repeat(password.length),
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White,
-                        modifier = Modifier.clickable { onCopy(password) }
+                        modifier = Modifier.clickable { onCopy(password) },
+                        fontSize = 20.sp
                     )
                 }
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
                         imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                         contentDescription = if (isPasswordVisible) "Hide Password" else "Show Password",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(32.dp)
                     )
                 }
             }

@@ -26,7 +26,7 @@ fun SettingsScreen(
     ) {
         // Заголовок
         Text(
-            text = "Settings",
+            text = "SETTINGS",
             style = MaterialTheme.typography.headlineLarge.copy(
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Bold
@@ -39,7 +39,8 @@ fun SettingsScreen(
         Text(
             text = "Logged in as: ${viewModel.username}",
             style = MaterialTheme.typography.bodyLarge,
-            color = Color.White
+            color = Color.White,
+            fontSize = 24.sp
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -49,7 +50,7 @@ fun SettingsScreen(
             onClick = { viewModel.showLogoutDialog() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Log Out")
+            Text("Log Out", fontSize = 20.sp)
         }
 
         // Діалог підтвердження виходу

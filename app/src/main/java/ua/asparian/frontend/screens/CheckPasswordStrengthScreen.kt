@@ -64,7 +64,7 @@ fun CheckPasswordStrengthScreen(viewModel: CheckPasswordStrengthViewModel, modif
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text("Check Strength")
+            Text("Check Strength", fontSize = 20.sp)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
